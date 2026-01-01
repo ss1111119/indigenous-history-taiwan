@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>原住民族重大歷史事件 | Indigenous Historical Events</title>
+    <style>
+        :root {
+            --primary-color: #8B4513;
+            --accent-color: #C0392B;
+            --bg-color: #F9F7F2;
+            --text-color: #333;
+        }
+
+        body {
+            font-family: "PingFang TC", "Microsoft JhengHei", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; }
+
+        /* 語言切換按鈕 */
+        .lang-switch {
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .lang-btn {
+            background: white;
+            border: 1px solid var(--primary-color);
+            padding: 5px 15px;
+            cursor: pointer;
+            transition: 0.3s;
+            border-radius: 20px;
+        }
+        .lang-btn:hover { background: var(--primary-color); color: white; }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid var(--primary-color);
+            margin-bottom: 40px;
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .event-card {
+            background: white;
+            border: 1px solid #ddd;
+            padding: 25px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+        }
+
+        .event-card.active:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            border-color: var(--accent-color);
+        }
+
+        .event-card h3 { margin: 0 0 10px 0; color: var(--primary-color); }
+        .event-card p { font-size: 0.95em; color: #555; flex-grow: 1; }
+
+        .status {
+            font-size: 0.8em;
+            padding: 4px 12px;
+            border-radius: 50px;
+            align-self: flex-start;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+        .status.completed { background: #E8F5E9; color: #2E7D32; }
+        .status.soon { background: #F5F5F5; color: #999; }
+
+        footer { text-align: center; margin-top: 60px; padding: 20px; color: #777; font-size: 0.85em; border-top: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="lang-switch">
+        <button class="lang-btn" onclick="toggleLang()">English / 中文</button>
+    </div>
+
+    <header>
+        <h1 id="main-title" data-zh="原住民族重大歷史事件系列" data-en="Major Historical Events of Indigenous Peoples">原住民族重大歷史事件系列</h1>
+        <p id="sub-title" data-zh="追尋土地記憶，重現歷史真相" data-en="Tracing land memories, reconstructing historical truths">追尋土地記憶，重現歷史真相</p>
+    </header>
+
+    <main class="event-grid">
+        <div class="event-card">
+            <h3 data-zh="1. 牡丹社事件" data-en="1. Mudan Incident">1. 牡丹社事件</h3>
+            <p data-zh="1874年：排灣族與日軍的歷史交鋒。" data-en="1874: Historical clash between the Paiwan people and the Japanese army.">1874年：排灣族與日軍的歷史交鋒。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <a href="./02-takangkou/takangkou.html" class="event-card active">
+            <h3 data-zh="2. 大港口事件" data-en="2. Takangkou Incident">2. 大港口事件</h3>
+            <p data-zh="1877年：阿美族反抗清軍的壯烈史詩。" data-en="1877: An epic saga of Pangcah/Amis resistance against the Qing army.">1877年：阿美族反抗清軍的壯烈史詩。</p>
+            <span class="status completed" data-zh="點擊進入" data-en="Enter Site">點擊進入</span>
+        </a>
+
+        <div class="event-card">
+            <h3 data-zh="3. 加禮宛事件" data-en="3. Karewan Incident">3. 加禮宛事件</h3>
+            <p data-zh="1878年：撒奇萊雅族與噶瑪蘭族的反抗運動。" data-en="1878: Resistance by the Sakizaya and Kavalan peoples.">1878年：撒奇萊雅族與噶瑪蘭族的反抗運動。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="4. 南庄事件" data-en="4. Nanzhuang Incident">4. 南庄事件</h3>
+            <p data-zh="1902年：賽夏族與泰雅族聯合抗日事件。" data-en="1902: Joint anti-Japanese resistance by the Saisiyat and Atayal.">1902年：賽夏族與泰雅族聯合抗日事件。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="5. 大豹社事件" data-en="5. Topa Incident">5. 大豹社事件</h3>
+            <p data-zh="1900-1906年：泰雅族大豹社的領域守護戰。" data-en="1900-1906: Territorial defense war of the Atayal Topa community.">1900-1906年：泰雅族大豹社的領域守護戰。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="6. 大嵙崁事件" data-en="6. Takekan Incident">6. 大嵙崁事件</h3>
+            <p data-zh="1886-1910年：泰雅族對抗清領與日治開採政策。" data-en="1886-1910: Atayal resistance against Qing and Japanese policies.">1886-1910年：泰雅族對抗清領與日治開採政策。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="7. 李棟山事件" data-en="7. Tapung Mountain Incident">7. 李棟山事件</h3>
+            <p data-zh="1911-1913年：泰雅族與日軍的高山戰役。" data-en="1911-1913: High-mountain battles between the Atayal and the Japanese.">1911-1913年：泰雅族與日軍的高山戰役。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="8. 七腳川事件" data-en="8. Cikasuan Incident">8. 七腳川事件</h3>
+            <p data-zh="1908年：阿美族部落被迫流離的轉折點。" data-en="1908: A turning point leading to the displacement of the Cikasuan Amis.">1908年：阿美族部落被迫流離的轉折點。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="9. 太魯閣事件" data-en="9. Truku War">9. 太魯閣事件</h3>
+            <p data-zh="1914年：太魯閣族保衛家園的最終抵抗。" data-en="1914: The final heroic defense of the Truku people.">1914年：太魯閣族保衛家園的最終抵抗。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+
+        <div class="event-card">
+            <h3 data-zh="10. 大分事件" data-en="10. Dafen Incident">10. 大分事件</h3>
+            <p data-zh="1915-1921年：布農族拉荷·阿雷與日軍的抗爭。" data-en="1915-1921: Resistance of the Bunun led by Dahu Ali.">1915-1921年：布農族拉荷·阿雷與日軍的抗爭。</p>
+            <span class="status soon" data-zh="整理中" data-en="Coming Soon">整理中</span>
+        </div>
+    </main>
+
+    <footer>
+        <p data-zh="資料來源：原住民族委員會" data-en="Source: Council of Indigenous Peoples">資料來源：原住民族委員會</p>
+    </footer>
+</div>
+
+<script>
+    let currentLang = 'zh';
+    function toggleLang() {
+        currentLang = currentLang === 'zh' ? 'en' : 'zh';
+        document.querySelectorAll('[data-zh]').forEach(el => {
+            el.textContent = el.getAttribute(`data-${currentLang}`);
+        });
+        document.documentElement.lang = currentLang === 'zh' ? 'zh-Hant' : 'en';
+    }
+</script>
+
+</body>
+</html>
