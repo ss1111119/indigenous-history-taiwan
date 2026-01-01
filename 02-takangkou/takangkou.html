@@ -107,18 +107,28 @@
             ScrollText: (props) => <LucideIcon name="scroll-text" {...props} />,
             MessageCircle: (props) => <LucideIcon name="message-circle" {...props} />,
             Hourglass: (props) => <LucideIcon name="hourglass" {...props} />,
-            Languages: (props) => <LucideIcon name="languages" {...props} />
+            Languages: (props) => <LucideIcon name="languages" {...props} />,
+            Clock: (props) => <LucideIcon name="clock" {...props} />,
+            Sword: (props) => <LucideIcon name="sword" {...props} />,
+            Footprints: (props) => <LucideIcon name="footprints" {...props} />,
+            Skull: (props) => <LucideIcon name="skull" {...props} />,
+            FileText: (props) => <LucideIcon name="file-text" {...props} />,
+            Film: (props) => <LucideIcon name="film" {...props} />,
+            PlayCircle: (props) => <LucideIcon name="play-circle" {...props} />,
+            ExternalLink: (props) => <LucideIcon name="external-link" {...props} />
         };
 
         // --- Bilingual Data ---
 
         const modules = [
             { id: 1, title: { zh: "引言", en: "Introduction" }, icon: "book-open" },
-            { id: 2, title: { zh: "史觀對照", en: "Perspectives" }, icon: "scale" },
-            { id: 3, title: { zh: "地圖資料", en: "Map Data" }, icon: "map" },
-            { id: 4, title: { zh: "角色扮演", en: "Role Play" }, icon: "user" },
-            { id: 5, title: { zh: "關鍵人物", en: "Key Figures" }, icon: "users" },
-            { id: 6, title: { zh: "歷史反思", en: "Reflection" }, icon: "brain" },
+            { id: 2, title: { zh: "歷史時間軸", en: "Timeline" }, icon: "clock" },
+            { id: 3, title: { zh: "史觀對照", en: "Perspectives" }, icon: "scale" },
+            { id: 4, title: { zh: "地圖資料", en: "Map Data" }, icon: "map" },
+            { id: 5, title: { zh: "角色扮演", en: "Role Play" }, icon: "user" },
+            { id: 6, title: { zh: "關鍵人物", en: "Key Figures" }, icon: "users" },
+            { id: 7, title: { zh: "歷史反思", en: "Reflection" }, icon: "brain" },
+            { id: 8, title: { zh: "影音專區", en: "Video Gallery" }, icon: "film" },
         ];
 
         const content = {
@@ -145,7 +155,9 @@
                 localSide: "阿美族部落",
                 reflectionTitle: "歷史的反思",
                 reflectionSubtitle: "從「勝者歷史」轉向多元視角的思考",
-                placeholder: "寫下你的想法..."
+                placeholder: "寫下你的想法...",
+                videoIntro: "透過影像紀錄與戲劇重現，深入感受這段歷史的重量。(點擊前往 YouTube 觀看)",
+                watchVideo: "前往 YouTube 觀看"
             },
             en: {
                 appTitle: "Cepo' 1877",
@@ -170,7 +182,9 @@
                 localSide: "Amis Tribe",
                 reflectionTitle: "Historical Reflection",
                 reflectionSubtitle: "Moving from 'Victor's History' to Multiple Perspectives",
-                placeholder: "Write down your thoughts..."
+                placeholder: "Write down your thoughts...",
+                videoIntro: "Experience the weight of history through documentaries. (Click to watch on YouTube)",
+                watchVideo: "Watch on YouTube"
             }
         };
 
@@ -188,6 +202,56 @@
                 p2: "However, at the mouth of the Xiuguluan River, the Cepo' tribe had long established a powerful civilization. When muskets met rituals, and forced labor crushed dignity, a storm brewed. This was not just a battle of arms, but a violent collision of two worldviews."
             }
         };
+
+        const timelineData = [
+            { 
+                year: "1874", 
+                type: "policy", // policy, conflict, tragedy, migration
+                title: { zh: "背景：牡丹社事件", en: "Context: Mudan Incident" }, 
+                desc: { zh: "日本侵台，清廷體認到後山防務重要性，沈葆楨展開「開山撫番」政策，勢力開始進入東部。", en: "Japan invades. Qing begins 'Open Mountains' policy to secure East Taiwan." } 
+            },
+            { 
+                year: "1875", 
+                type: "policy",
+                title: { zh: "開路：八通關古道", en: "The Road: Batongguan" }, 
+                desc: { zh: "吳光亮率領飛虎軍，開闢第一條橫貫中央山脈的道路。漢人軍隊正式進入秀姑巒溪流域。", en: "Wu Guangliang opens the first cross-island road, bringing Han troops to the region." } 
+            },
+            { 
+                year: "1877", 
+                month: "07", 
+                type: "conflict",
+                title: { zh: "導火線：祭典中的勞役", en: "Spark: Labor at Ritual" }, 
+                desc: { zh: "部落舉行豐年祭 (Ilisin)，通事林東涯卻強迫青年服勞役、干擾祭典並騷擾婦女，違反部落禁忌。", en: "Interpreter Lin forces labor during the sacred Harvest Festival, violating tribal taboos." } 
+            },
+            { 
+                year: "1877", 
+                month: "08", 
+                type: "conflict",
+                title: { zh: "爆發：殺通事與開戰", en: "Outbreak: War Begins" }, 
+                desc: { zh: "部落青年憤而殺死通事。清軍隨即調兵遣將，孫開華率「擢勝軍」從成廣澳登陸進攻。", en: "Youths kill the interpreter. General Sun Kaihua lands troops to attack." } 
+            },
+            { 
+                year: "1877", 
+                month: "09-12", 
+                type: "conflict",
+                title: { zh: "僵持：壕溝對峙", en: "Stalemate" }, 
+                desc: { zh: "清軍火砲雖強但難攻天險，阿美族人利用地形與防禦工事頑強抵抗，戰事陷入長達數月的膠著。", en: "Tribes use terrain to resist superior Qing firepower. The war enters a months-long stalemate." } 
+            },
+            { 
+                year: "1878", 
+                month: "01", 
+                type: "tragedy",
+                title: { zh: "慘案：營地誘殺", en: "The Massacre" }, 
+                desc: { zh: "久攻不下，清軍改採誘降。部落壯丁165人以為和平到來，赴宴時遭關門集體屠殺，僅一人倖存。", en: "Qing feigns peace. 165 tribesmen attending a 'peace banquet' are massacred. Only one escapes." } 
+            },
+            { 
+                year: "1878", 
+                month: "After", 
+                type: "migration",
+                title: { zh: "離散：逃往聖山", en: "Dispersion" }, 
+                desc: { zh: "倖存的老弱婦孺連夜逃往 Cilangasan (聖山) 與附近部落，曾經強盛的 Cepo' 部落因而瓦解離散。", en: "Survivors flee to the Holy Mountain. The great Cepo' settlement is disbanded." } 
+            }
+        ];
 
         const historyEvents = [
             {
@@ -332,6 +396,52 @@
                         }
                     }
                 ]
+            },
+            {
+                role: { zh: "清軍基層士兵 (Green Standard Army)", en: "Qing Soldier" },
+                context: {
+                    zh: "你是從中國內地被調來的士兵。這裡的「瘴氣」（瘧疾）讓你的同袍倒下了一半。長官下令燒毀原住民的村莊，你心裡很害怕被「出草」，但也害怕違抗軍令。",
+                    en: "You are a conscript from mainland China. Malaria has claimed half your unit. The officer orders you to burn the tribal village. You fear headhunters, but fear disobeying orders more."
+                },
+                options: [
+                    {
+                        text: { zh: "執行軍令：為了生存，跟隨大部隊放火燒屋。", en: "Obey: Burn the village to survive." },
+                        result: {
+                            zh: "你活了下來，但你看著無辜的婦孺逃竄，心中充滿罪惡感。這是當時許多清軍士兵的真實寫照——他們也是帝國擴張下的犧牲品。",
+                            en: "You survive, but watching women and children flee fills you with guilt. This was the reality for many soldiers—pawns in imperial expansion."
+                        }
+                    },
+                    {
+                        text: { zh: "消極怠工：假裝點火，實際上對空鳴槍示警。", en: "Hesitate: Pretend to fire, give warning." },
+                        result: {
+                            zh: "你的仁慈可能救了幾個族人，但若被督戰隊發現，你將面臨軍法處置。在戰爭機器面前，個人的良知往往需要極大的勇氣。",
+                            en: "Your mercy might save a few, but if caught, you face execution. In the machine of war, individual conscience requires immense courage."
+                        }
+                    }
+                ]
+            },
+            {
+                role: { zh: "部落婦女 (Fafahiyan)", en: "Tribal Woman" },
+                context: {
+                    zh: "男人都在前線作戰，清軍逼近部落。糧食快沒了，孩子在哭鬧。長老說要準備撤退到深山的 Cilangasan，但家裡還有許多傳承的陶甕和種子帶不走。",
+                    en: "Men are fighting. Qing troops approach. Food is low, children are crying. Elders say retreat to Cilangasan mountain, but you have heirlooms and seeds you can't carry."
+                },
+                options: [
+                    {
+                        text: { zh: "守護家園：留下來照顧行動不便的老人，保護家產。", en: "Stay: Guard the home and elders." },
+                        result: {
+                            zh: "這是極危險的決定。歷史記載清軍為了斷絕後患，會焚毀部落。留下來的人大多凶多吉少，或被迫剃髮同化。",
+                            en: "Extremely dangerous. History records Qing troops burned villages to prevent return. Those who stayed faced death or forced assimilation."
+                        }
+                    },
+                    {
+                        text: { zh: "攜帶種子逃亡：為了延續部落的命脈，忍痛拋棄家當撤退。", en: "Flee with Seeds: Abandon home to save the lineage." },
+                        result: {
+                            zh: "你帶著孩子和野菜種子逃入深山。雖然失去了家，但因為你的堅持，阿美族的血脈與文化（如野菜知識）才得以在戰後重生。",
+                            en: "You flee with children and seeds. Though the home is lost, your persistence ensures the survival of Amis lineage and culture (like wild vegetable knowledge)."
+                        }
+                    }
+                ]
             }
         ];
 
@@ -340,6 +450,12 @@
                 name: { zh: "吳光亮", en: "Wu Guangliang" }, 
                 title: { zh: "清朝總兵", en: "Qing General" }, 
                 desc: { zh: "負責「開山撫番」中路任務。手段採取「剿撫兼施」。除了軍事鎮壓，也被部落記憶指控使用了「誘殺」手段來瓦解反抗勢力。", en: "Tasked with pacifying the East. Used both suppression and appeasement. Accused by oral history of using treachery and massacres." }, 
+                side: "official" 
+            },
+            { 
+                name: { zh: "孫開華", en: "Sun Kaihua" }, 
+                title: { zh: "提督 (清軍將領)", en: "Admiral / General" }, 
+                desc: { zh: "後期接手戰事的關鍵人物。記載中他採取強硬手段，包含使用洋砲轟擊部落，並策劃了最後的「營地誘殺」計謀。", en: "Key figure in later stages. Used modern artillery and plotted the final 'banquet massacre' strategy." }, 
                 side: "official" 
             },
             { 
@@ -386,6 +502,25 @@
             }
         ];
 
+        // Video Data - Using Thumbnails to avoid iframe errors
+        const videoData = [
+            {
+                id: "gqbf06rGtm4",
+                title: { zh: "劇情片《混濁》", en: "Drama: Mangotaay" },
+                desc: { zh: "原視製作的劇情短片，重現 Cepo' 戰役中族人的掙扎與情感，讓歷史不再只是冰冷的文字。", en: "A dramatic short film by TITV, recreating the struggles and emotions of the tribe during the Cepo' battle." }
+            },
+            {
+                id: "UdfHBogQUtc",
+                title: { zh: "原觀點：大港口事件", en: "Indigenous Perspective: Cepo' Incident" },
+                desc: { zh: "深入探討事件始末，包含珍貴的部落口述歷史與專家訪談，分析衝突的深層原因。", en: "In-depth discussion covering oral history and expert interviews, analyzing the deeper causes of the conflict." }
+            },
+            {
+                id: "01vA_9-oeRw",
+                title: { zh: "百年原殤－流離之岸", en: "Centennial Trauma: The Shore of Dispersion" },
+                desc: { zh: "紀錄片精華片段，講述戰後族人流離失所的歷史傷痕，以及尋找回家的路。", en: "Documentary highlights focusing on the post-war dispersion and the historical trauma of the survivors." }
+            }
+        ];
+
         // --- Components ---
 
         const Module1 = ({ onNext, lang }) => (
@@ -420,13 +555,90 @@
             </div>
         );
 
+        // Optimized Timeline Module
+        const ModuleTimeline = ({ lang }) => {
+            const getIcon = (type) => {
+                switch(type) {
+                    case 'policy': return <Icons.FileText className="w-5 h-5 text-white" />;
+                    case 'conflict': return <Icons.Sword className="w-5 h-5 text-white" />;
+                    case 'tragedy': return <Icons.Skull className="w-5 h-5 text-white" />;
+                    case 'migration': return <Icons.Footprints className="w-5 h-5 text-white" />;
+                    default: return <Icons.Clock className="w-5 h-5 text-white" />;
+                }
+            };
+
+            const getColor = (type) => {
+                switch(type) {
+                    case 'policy': return 'bg-blue-600 border-blue-200';
+                    case 'conflict': return 'bg-orange-600 border-orange-200';
+                    case 'tragedy': return 'bg-red-800 border-red-200';
+                    case 'migration': return 'bg-green-600 border-green-200';
+                    default: return 'bg-stone-600 border-stone-200';
+                }
+            };
+
+            const getLabel = (type) => {
+                switch(type) {
+                    case 'policy': return lang === 'zh' ? '政策' : 'Policy';
+                    case 'conflict': return lang === 'zh' ? '衝突' : 'Conflict';
+                    case 'tragedy': return lang === 'zh' ? '慘案' : 'Tragedy';
+                    case 'migration': return lang === 'zh' ? '遷徙' : 'Migration';
+                    default: return '';
+                }
+            };
+
+            return (
+                <div className="fade-in max-w-4xl mx-auto py-8">
+                    <h2 className="text-3xl font-bold serif text-stone-800 text-center mb-12">{modules[1].title[lang]}</h2>
+                    <div className="relative ml-4 md:ml-1/2 space-y-12">
+                        {/* Central Line */}
+                        <div className="absolute left-[19px] md:left-1/2 md:-ml-[2px] top-0 bottom-0 w-1 bg-stone-300 rounded-full"></div>
+
+                        {timelineData.map((item, idx) => (
+                            <div key={idx} className={`relative flex flex-col md:flex-row items-center group ${idx % 2 === 0 ? 'md:flex-row-reverse' : ''}`}>
+                                {/* Icon Dot */}
+                                <div className={`absolute left-0 md:left-1/2 md:-ml-[20px] w-10 h-10 rounded-full border-4 z-10 flex items-center justify-center shadow-md transform transition-transform group-hover:scale-110 ${getColor(item.type)}`}>
+                                    {getIcon(item.type)}
+                                </div>
+                                
+                                {/* Content Card */}
+                                <div className={`ml-16 md:ml-0 md:w-1/2 ${idx % 2 === 0 ? 'md:pl-12 text-left' : 'md:pr-12 md:text-right'} w-full`}>
+                                    <div className="bg-white p-6 rounded-xl shadow-md border border-stone-200 hover:shadow-xl transition-all duration-300 group-hover:-translate-y-1">
+                                        <div className={`flex flex-col ${idx % 2 === 0 ? 'items-start' : 'md:items-end items-start'} mb-3`}>
+                                            <div className="flex items-center gap-2 mb-1">
+                                                <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded text-white ${getColor(item.type).split(' ')[0]}`}>
+                                                    {getLabel(item.type)}
+                                                </span>
+                                                <span className="text-sm font-mono text-stone-500 font-bold">
+                                                    {item.year} {item.month ? `.${item.month}` : ''}
+                                                </span>
+                                            </div>
+                                            <h3 className="text-xl font-bold text-stone-900">{item.title[lang]}</h3>
+                                        </div>
+                                        <p className="text-stone-600 text-sm leading-relaxed">{item.desc[lang]}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    {/* Legend */}
+                    <div className="mt-12 flex flex-wrap justify-center gap-4 text-xs text-stone-500">
+                        <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-blue-600"></div>{lang === 'zh' ? '政策' : 'Policy'}</div>
+                        <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-orange-600"></div>{lang === 'zh' ? '衝突' : 'Conflict'}</div>
+                        <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-red-800"></div>{lang === 'zh' ? '慘案' : 'Tragedy'}</div>
+                        <div className="flex items-center gap-1"><div className="w-3 h-3 rounded-full bg-green-600"></div>{lang === 'zh' ? '遷徙' : 'Migration'}</div>
+                    </div>
+                </div>
+            );
+        };
+
         const Module2 = ({ lang }) => {
             const [activeEvent, setActiveEvent] = useState(0);
 
             return (
                 <div className="flex flex-col h-full fade-in space-y-6">
                     <div className="text-center mb-4">
-                        <h2 className="text-3xl font-bold serif text-stone-800">{modules[1].title[lang]}</h2>
+                        <h2 className="text-3xl font-bold serif text-stone-800">{modules[2].title[lang]}</h2>
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-2 mb-4">
@@ -595,7 +807,7 @@
 
             return (
                 <div className="flex flex-col h-full fade-in">
-                    <h2 className="text-3xl font-bold serif text-stone-800 text-center mb-2">{modules[2].title[lang]}</h2>
+                    <h2 className="text-3xl font-bold serif text-stone-800 text-center mb-2">{modules[3].title[lang]}</h2>
                     <p className="text-center text-stone-600 mb-6">{content[lang].mapInstruction}</p>
 
                     <div className="flex flex-col md:flex-row gap-8 items-stretch flex-grow">
@@ -724,8 +936,8 @@
 
         const Module5 = ({ lang }) => (
             <div className="fade-in">
-                <h2 className="text-3xl font-bold serif text-stone-800 text-center mb-8">{modules[4].title[lang]}</h2>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <h2 className="text-3xl font-bold serif text-stone-800 text-center mb-8">{modules[5].title[lang]}</h2>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {characters.map((char, idx) => (
                         <div key={idx} className="bg-white rounded-xl shadow-md overflow-hidden hover:shadow-xl transition-shadow border border-stone-200 flex flex-col">
                             <div className={`h-2 ${char.side === 'official' ? 'bg-blue-800' : 'bg-red-700'}`}></div>
@@ -776,6 +988,55 @@
             </div>
         );
 
+        const ModuleVideos = ({ lang }) => (
+            <div className="fade-in max-w-5xl mx-auto pb-10">
+                <div className="text-center mb-10">
+                    <h2 className="text-3xl font-bold serif text-stone-800 mb-3">{modules[7].title[lang]}</h2>
+                    <p className="text-stone-600">{content[lang].videoIntro}</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {videoData.map((video, idx) => (
+                        <div key={idx} className="bg-white rounded-xl shadow-lg overflow-hidden border border-stone-200 flex flex-col h-full hover:shadow-xl transition-shadow duration-300 group">
+                            {/* Thumbnail Container */}
+                            <div className="relative aspect-video bg-stone-900 cursor-pointer overflow-hidden" onClick={() => window.open(`https://www.youtube.com/watch?v=${video.id}`, '_blank')}>
+                                <img 
+                                    src={`https://img.youtube.com/vi/${video.id}/hqdefault.jpg`} 
+                                    alt={video.title[lang]} 
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-80 group-hover:opacity-100"
+                                />
+                                {/* Play Overlay */}
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <div className="w-16 h-16 bg-red-600 rounded-full flex items-center justify-center shadow-lg transform transition-transform group-hover:scale-110">
+                                        <Icons.PlayCircle className="w-10 h-10 text-white fill-current" />
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="p-6 flex-grow flex flex-col">
+                                <h3 className="text-lg font-bold text-stone-900 mb-2 leading-tight group-hover:text-red-800 transition-colors">
+                                    <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank" rel="noopener noreferrer">
+                                        {video.title[lang]}
+                                    </a>
+                                </h3>
+                                <p className="text-stone-600 text-sm leading-relaxed flex-grow">
+                                    {video.desc[lang]}
+                                </p>
+                                <a 
+                                    href={`https://www.youtube.com/watch?v=${video.id}`} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="mt-4 inline-flex items-center text-sm font-bold text-red-700 hover:text-red-900 transition-colors self-start"
+                                >
+                                    {content[lang].watchVideo} <Icons.ExternalLink className="w-4 h-4 ml-1" />
+                                </a>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
         // --- Main App ---
 
         const App = () => {
@@ -793,11 +1054,13 @@
             const renderModule = () => {
                 switch(activeModule) {
                     case 1: return <Module1 lang={lang} onNext={() => setActiveModule(2)} />;
-                    case 2: return <Module2 lang={lang} />;
-                    case 3: return <Module3 lang={lang} />;
-                    case 4: return <Module4 lang={lang} />;
-                    case 5: return <Module5 lang={lang} />;
-                    case 6: return <Module6 lang={lang} />;
+                    case 2: return <ModuleTimeline lang={lang} />;
+                    case 3: return <Module2 lang={lang} />;
+                    case 4: return <Module3 lang={lang} />;
+                    case 5: return <Module4 lang={lang} />;
+                    case 6: return <Module5 lang={lang} />;
+                    case 7: return <Module6 lang={lang} />;
+                    case 8: return <ModuleVideos lang={lang} />;
                     default: return <Module1 lang={lang} />;
                 }
             };
