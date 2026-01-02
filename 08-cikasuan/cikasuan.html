@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>七腳川事件：被遺忘的盟友 | The Cikasuan Incident</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Noto+Serif+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        history: {
+                            paper: '#f2eee5', // 更溫潤的米色
+                            ink: '#2c1810',
+                            red: '#8a1c1c',     
+                            blue: '#1e3a8a',    
+                            gold: '#b45309',
+                            accent: '#6b2d2d' // 深紅印章色
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Noto Serif TC"', 'serif'],
+                        sans: ['"Noto Sans TC"', 'sans-serif'],
+                    },
+                    animation: {
+                        'fade-in-up': 'fadeInUp 1s ease-out forwards',
+                        'stamp': 'stampBounce 0.5s ease-out forwards',
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        stampBounce: {
+                            '0%': { transform: 'scale(1.5)', opacity: '0' },
+                            '60%': { transform: 'scale(0.9)', opacity: '1' },
+                            '100%': { transform: 'scale(1)', opacity: '0.8' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #f2eee5;
+            color: #2c1810;
+            overflow-x: hidden;
+        }
+        .texture-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0.6;
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E");
+            z-index: 50;
+        }
+        .paper-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), inset 0 0 20px rgba(180, 83, 9, 0.05);
+        }
+        .stamp-border {
+            border: 2px solid #6b2d2d;
+            border-radius: 4px;
+            position: relative;
+        }
+        .stamp-border::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid #6b2d2d;
+            pointer-events: none;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f2eee5; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #8a1c1c; 
+            border-radius: 5px;
+            border: 2px solid #f2eee5;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        // ==========================================
+        // Data & Content
+        // ==========================================
+        const CONTENT = {
+            intro: {
+                title: { zh: "七腳川事件", en: "The Cikasuan Incident" },
+                subtitle: { zh: "1908．盟友的背叛與消失的部落", en: "1908: A Betrayal of Allies and a Lost Tribe" },
+                desc: { 
+                    zh: "在花蓮吉安鄉的歷史塵埃下，埋藏著一段「被逼上梁山」的故事。七腳川（Cikasuan）人曾是日本政府最倚重的「盟友」，他們擔任隘勇，協助防守邊界。然而，1908年，因為日本官方的長期勞役剝削與薪資苛扣，這群守護者被迫轉身反抗。這不只是一場武裝衝突，更是一次關於尊嚴、背叛與流亡的歷史悲劇。", 
+                    en: "Buried beneath the history of Ji'an, Hualien, lies a story of betrayal. The Cikasuan people were once Japan's most trusted allies, serving as border guards (Aiyong). But in 1908, after years of exploitation and withheld wages, these guardians were forced to rebel. This is not just a conflict; it's a tragedy of dignity, betrayal, and exile."
+                },
+                curatorNote: {
+                    zh: "【策展人導讀】如果您是漢人朋友，請試著想像：您受僱於政府，拿命保衛家園，卻換來薪水被苛扣、家人被歧視。當溝通無效，為了生存，您會選擇繼續忍氣吞聲，還是挺身捍衛尊嚴？",
+                    en: "[Curator's Note] Imagine being employed to protect your home with your life, only to have your wages stolen and your family discriminated against. Would you stay silent, or fight for your dignity?"
+                }
+            },
+            timeline: [
+                {
+                    year: "1900-1907",
+                    label: { zh: "前奏：變質的盟約", en: "Prelude: The Soured Alliance" },
+                    desc: { zh: "為了防堵太魯閣族，日本政府大量徵召七腳川青年擔任「隘勇」。部落以為這是合作，卻逐漸淪為廉價的勞動力。", en: "Japan conscripted Cikasuan youth as border guards. The tribe saw it as cooperation, but they became cheap labor." },
+                    type: "policy"
+                },
+                {
+                    year: "1908.12.13",
+                    label: { zh: "導火線：薪資與尊嚴", en: "Spark: Wages & Dignity" },
+                    desc: { zh: "「我們是用命換薪水，不是乞丐！」隘勇因不滿長期積欠薪資與日警的高壓管理，部分族人憤而棄職。", en: "'We risk our lives for pay, we are not beggars!' Guards abandoned posts over unpaid wages and harsh policing." },
+                    type: "conflict"
+                },
+                {
+                    year: "1908.12.16",
+                    label: { zh: "鎮壓：來自國家的暴力", en: "Suppression: State Violence" },
+                    desc: { zh: "日本總督府不願談判，直接調派軍艦與正規軍砲擊部落。七腳川社化為火海，這是現代化武力對傳統部落的輾壓。", en: "Refusing negotiation, the Governor-General bombarded the village with warships. A modern military crushing a traditional tribe." },
+                    type: "war"
+                },
+                {
+                    year: "1909",
+                    label: { zh: "結局：流亡與滅社", en: "End: Exile & Erasure" },
+                    desc: { zh: "倖存者被迫四散流亡至鯉魚潭、木瓜山等地。原本強盛的七腳川社，在官方地圖上被抹去，土地後來成為了日本移民村（今吉安鄉）。", en: "Survivors scattered. The powerful Cikasuan village was erased from maps, its land turned into Japanese settlement villages (today's Ji'an)." },
+                    type: "migration"
+                }
+            ],
+            perspectives: [
+                {
+                    role: { zh: "統治者的凝視 (日本官方)", en: "The Ruler's Gaze" },
+                    source: { zh: "來源：《理蕃誌稿》", en: "Source: Riban Shikou" },
+                    content: { zh: "這些蕃人不知感恩，竟因小小的薪資問題就反叛。為了維護帝國的威信與隘勇線的安全，必須將其視為「兇蕃」徹底討伐，殺雞儆猴，以利後續的理蕃事業。", en: "These savages are ungrateful, rebelling over petty wages. To maintain Imperial authority, they must be punished as an example for future governance." },
+                    color: "bg-history-blue text-white",
+                    icon: "scroll"
+                },
+                {
+                    role: { zh: "倖存者的吶喊 (七腳川人)", en: "The Survivor's Voice" },
+                    source: { zh: "來源：部落耆老口述", en: "Source: Oral History" },
+                    content: { zh: "我們不是叛亂，我們只是想要回屬於我們的公道！幫日本人打仗，卻被當作奴隸對待。當砲火燒毀我們的家，我們只能往深山跑，那種無助與憤怒，誰能明白？", en: "We are not rebels; we just wanted justice! We fought for them but were treated like slaves. When fire consumed our homes, we fled to the mountains in helplessness and rage." },
+                    color: "bg-history-red text-white",
+                    icon: "heart-crack"
+                }
+            ],
+            mapPoints: [
+                { name: { zh: "七腳川舊社 (今吉安)", en: "Old Cikasuan Village" }, lat: 23.975, lng: 121.570, desc: { zh: "曾經是數千人的大部落，事件後土地被沒收，變成了日本人的「吉野移民村」。", en: "Once a massive village, its land was confiscated after the incident and became the Japanese 'Yoshino Immigrant Village'." } },
+                { name: { zh: "七腳川派出所", en: "Police Station" }, lat: 23.978, lng: 121.572, desc: { zh: "衝突的引爆點。不只是派出所，更是當時監控部落生活的權力象徵。", en: "The spark of conflict. A symbol of the power monitoring tribal life." } },
+                { name: { zh: "鯉魚潭山區", en: "Liyu Lake Mountains" }, lat: 23.930, lng: 121.510, desc: { zh: "族人攜老扶幼的逃亡路線。在濕冷的深山中，許多人因飢餓與疾病死去。", en: "The escape route. Many elders and children died of hunger and disease in the cold mountains." } },
+            ],
+            roles: [
+                {
+                    id: 1,
+                    title: { zh: "情境一：尊嚴與生存的兩難", en: "Scenario 1: Dignity vs. Survival" },
+                    question: { zh: "你是部落青年。日本警察再次以此為由扣發了你這兩個月的薪水，還當眾辱罵你的父親。家裡的米缸已經空了。你會？", en: "You are a tribal youth. The police withheld your pay again and insulted your father. Your family has no rice. What do you do?" },
+                    options: [
+                        { text: { zh: "忍氣吞聲，去求警察發一點錢", en: "Beg the police for some money" }, result: { zh: "警察嘲笑你並拒絕了。你的隱忍換來的是更無情的踐踏，部落裡的怒火已經快壓不住了。", en: "The police mock you and refuse. Your silence only invites more cruelty. The tribe's anger reaches a boiling point." } },
+                        { text: { zh: "不想再忍了！聯合兄弟去討公道", en: "Enough! Unite with brothers to demand justice" }, result: { zh: "你們去派出所抗議，卻被視為「武裝暴動」。這成為了日軍出兵的藉口，雖然你維護了尊嚴，卻也開啟了悲劇。", en: "Your protest is labeled an 'armed rebellion', giving the army an excuse to attack. You kept your dignity, but the tragedy begins." } }
+                    ]
+                },
+            ],
+            figures: [
+                { 
+                    name: { zh: "佐久間左馬太", en: "Sakuma Samata" }, 
+                    title: { zh: "決策者 / 台灣總督", en: "The Governor" }, 
+                    desc: { zh: "他眼中的七腳川人不是「人」，而是阻礙開發資源的「障礙」。他下令的鎮壓，是為了替國家機器開路。", en: "To him, the tribe was an obstacle to resource exploitation. His order to suppress was to clear the path for the state machine." },
+                    image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/Sakuma_Samata.jpg/960px-Sakuma_Samata.jpg",
+                    source: { zh: "圖片來源：維基百科", en: "Source: Wikimedia Commons" },
+                    type: "official"
+                },
+                { 
+                    name: { zh: "七腳川的祖靈與後裔", en: "Ancestors & Descendants" }, 
+                    title: { zh: "記憶守護者", en: "Keepers of Memory" }, 
+                    desc: { zh: "歷史沒有記下太多他們的名字，但流亡到台東、壽豐的後裔，至今仍努力拼湊那段被打碎的記憶。", en: "History forgot their names, but their descendants in Taitung and Shoufeng strive to piece together the shattered memories." },
+                    image: null, 
+                    type: "tribe"
+                }
+            ],
+            reflection: [
+                { zh: "如果是你，當「國家法律」與「生存尊嚴」衝突時，你會站在哪一邊？", en: "If 'State Law' clashed with 'Human Dignity', which side would you choose?" },
+                { zh: "今天的吉安鄉這片土地，曾經屬於誰？我們該如何面對這段「土地易主」的歷史？", en: "Who did the land of Ji'an originally belong to? How should we face this history of displacement?" }
+            ],
+            // New Video & Resource Data
+            videos: [
+                {
+                    id: "peHvQN2Wfcs",
+                    title: { zh: "七腳川循跡：用身體記憶逃難路線", en: "Retracing Cikasuan: Remembering the Escape Route" },
+                    channel: "原視 TITV+"
+                },
+                {
+                    id: "KnG-p1a_ZS8",
+                    title: { zh: "七腳川事件之影響與歷史變遷", en: "Impact and Historical Changes of the Cikasuan Incident" },
+                    channel: "原視 TITV+"
+                }
+            ],
+            resources: [
+                {
+                    title: { zh: "深入閱讀：七腳川事件數位地圖", en: "Deep Dive: Cikasuan Incident StoryMap" },
+                    url: "https://storymaps.arcgis.com/collections/7e917133a47a4548bc33f5138a397474",
+                    desc: { zh: "透過 ArcGIS StoryMaps 的互動地圖，更詳細地探索事件的地理脈絡。", en: "Explore the geographical context in detail through this interactive ArcGIS StoryMap." },
+                    type: "ArcGIS"
+                }
+            ]
+        };
+
+        // ==========================================
+        // Helper Components
+        // ==========================================
+        
+        const LucideIcon = ({ name, size = 24, className = "" }) => {
+            const iconRef = React.useRef(null);
+            React.useEffect(() => {
+                if (window.lucide) {
+                    window.lucide.createIcons({
+                        root: iconRef.current ? iconRef.current.parentNode : document,
+                        nameAttr: 'data-lucide',
+                        attrs: { class: className, width: size, height: size }
+                    });
+                }
+            }, [name, size, className]);
+            return <i data-lucide={name} ref={iconRef} className={className}></i>;
+        };
+
+        const FadeIn = ({ children, delay = 0 }) => (
+            <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: `${delay}ms` }}>
+                {children}
+            </div>
+        );
+
+        const SectionHeader = ({ title, icon }) => (
+            <div className="flex items-center gap-4 mb-10 pb-4 border-b border-history-ink/20 relative">
+                <div className="text-history-red bg-history-paper p-2 rounded-full border border-history-red/30 shadow-sm">
+                    <LucideIcon name={icon} size={28} />
+                </div>
+                <h2 className="text-3xl md:text-4xl font-serif font-black text-history-ink tracking-wide">
+                    {title}
+                </h2>
+                <div className="absolute bottom-[-1px] left-0 w-24 h-[3px] bg-history-red"></div>
+            </div>
+        );
+
+        // ==========================================
+        // Main Components
+        // ==========================================
+
+        const Timeline = ({ lang }) => (
+            <div className="relative border-l-2 border-history-ink/20 ml-4 md:ml-8 space-y-16 py-4">
+                {CONTENT.timeline.map((item, idx) => (
+                    <FadeIn key={idx} delay={idx * 100}>
+                        <div className="relative pl-10 md:pl-16">
+                            {/* Marker */}
+                            <div className={`absolute -left-[9px] top-2 w-5 h-5 rounded-full border-4 border-history-paper shadow-md transition-colors duration-300
+                                ${item.type === 'war' ? 'bg-history-red' : item.type === 'conflict' ? 'bg-history-gold' : 'bg-history-blue'}`}>
+                            </div>
+                            
+                            <div className="flex flex-col md:flex-row md:items-baseline gap-2 mb-2">
+                                <span className="font-mono text-history-red font-bold text-lg tracking-wider">{item.year}</span>
+                                <h3 className="text-xl md:text-2xl font-serif font-bold text-history-ink">{item.label[lang]}</h3>
+                            </div>
+                            
+                            <p className="text-gray-700 leading-relaxed text-lg font-light border-l-4 border-history-paper hover:border-history-gold/30 pl-4 transition-all duration-300">
+                                {item.desc[lang]}
+                            </p>
+                        </div>
+                    </FadeIn>
+                ))}
+            </div>
+        );
+
+        const Perspectives = ({ lang }) => (
+            <div className="grid md:grid-cols-2 gap-8 md:gap-12">
+                {CONTENT.perspectives.map((p, idx) => (
+                    <FadeIn key={idx} delay={idx * 200 + 200}>
+                        <div className={`relative h-full p-8 rounded-xl shadow-xl transition-transform hover:-translate-y-1 duration-500 overflow-hidden
+                            ${idx === 0 ? 'bg-[#2c3e50] text-gray-100' : 'bg-[#8a1c1c] text-orange-50'}`}>
+                            
+                            {/* Background Icon */}
+                            <div className="absolute -bottom-4 -right-4 opacity-10 rotate-12">
+                                <LucideIcon name={p.icon} size={150} />
+                            </div>
+
+                            <div className="relative z-10">
+                                <div className="flex items-center gap-3 mb-6 opacity-80 border-b border-white/20 pb-3">
+                                    <LucideIcon name={idx === 0 ? "scale" : "mic"} size={20} />
+                                    <span className="text-sm font-bold tracking-widest uppercase">{p.source[lang]}</span>
+                                </div>
+                                
+                                <h3 className="text-2xl font-serif font-bold mb-4 leading-tight">{p.role[lang]}</h3>
+                                
+                                <div className="text-lg leading-loose font-serif italic opacity-90">
+                                    “{p.content[lang]}”
+                                </div>
+                            </div>
+                        </div>
+                    </FadeIn>
+                ))}
+            </div>
+        );
+
+        const RolePlay = ({ lang }) => {
+            const [choice, setChoice] = React.useState(null);
+            const scenario = CONTENT.roles[0];
+
+            return (
+                <FadeIn delay={300}>
+                    <div className="bg-white p-6 md:p-10 rounded-xl paper-shadow border border-history-ink/5 relative overflow-hidden">
+                        {/* Decorative Stamp */}
+                        <div className="absolute top-4 right-4 opacity-10 pointer-events-none transform rotate-12">
+                            <div className="border-4 border-history-red rounded-full w-32 h-32 flex items-center justify-center">
+                                <span className="text-history-red font-serif font-black text-4xl">試練</span>
+                            </div>
+                        </div>
+
+                        <h3 className="text-2xl font-serif font-bold text-history-ink mb-6 flex items-center gap-3">
+                            <span className="bg-history-gold text-white px-3 py-1 rounded text-sm">RPG</span>
+                            {scenario.title[lang]}
+                        </h3>
+                        
+                        <p className="text-xl md:text-2xl font-serif text-history-ink/80 leading-relaxed mb-10">
+                            {scenario.question[lang]}
+                        </p>
+                        
+                        {!choice ? (
+                            <div className="grid md:grid-cols-2 gap-6">
+                                {scenario.options.map((opt, idx) => (
+                                    <button 
+                                        key={idx}
+                                        onClick={() => setChoice(idx)}
+                                        className="group p-6 border-2 border-history-ink/20 hover:border-history-gold rounded-lg text-left transition-all hover:bg-history-paper"
+                                    >
+                                        <div className="flex items-center gap-3 mb-2 text-history-gold font-bold group-hover:text-history-red">
+                                            <LucideIcon name={idx === 0 ? "shield-alert" : "swords"} size={24} />
+                                            <span>{lang === 'zh' ? '選擇' : 'Choice'} {idx + 1}</span>
+                                        </div>
+                                        <span className="text-lg text-history-ink">{opt.text[lang]}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="bg-history-paper/50 p-6 md:p-8 rounded-lg border-l-4 border-history-red animate-fade-in-up">
+                                <h4 className="text-history-red font-bold text-lg mb-3 flex items-center gap-2">
+                                    <LucideIcon name="scroll-text" />
+                                    {lang === 'zh' ? '歷史的無情結局' : 'The Ruthless History'}
+                                </h4>
+                                <p className="text-xl text-history-ink leading-relaxed mb-6">
+                                    {scenario.options[choice].result[lang]}
+                                </p>
+                                <button 
+                                    onClick={() => setChoice(null)}
+                                    className="px-6 py-2 bg-history-ink text-white rounded hover:bg-gray-800 transition-colors"
+                                >
+                                    {lang === 'zh' ? '再試一次' : 'Try Again'}
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </FadeIn>
+            );
+        };
+
+        const MapSection = ({ lang }) => {
+            const mapRef = React.useRef(null);
+            const mapInstanceRef = React.useRef(null);
+            
+            React.useEffect(() => {
+                if (!document.getElementById('leaflet-script')) {
+                    const script = document.createElement('script');
+                    script.id = 'leaflet-script';
+                    script.src = "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";
+                    document.body.appendChild(script);
+                }
+
+                const interval = setInterval(() => {
+                    if (window.L && mapRef.current && !mapInstanceRef.current) {
+                        clearInterval(interval);
+                        const map = window.L.map(mapRef.current).setView([23.96, 121.55], 12);
+                        mapInstanceRef.current = map;
+                        
+                        window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                            attribution: '© OpenStreetMap'
+                        }).addTo(map);
+
+                        const icon = window.L.icon({
+                            iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+                            shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+                            iconSize: [25, 41],
+                            iconAnchor: [12, 41]
+                        });
+
+                        CONTENT.mapPoints.forEach(p => {
+                            window.L.marker([p.lat, p.lng], { icon })
+                                .addTo(map)
+                                .bindPopup(`<div style="font-family: 'Noto Sans TC';"><b>${p.name[lang]}</b><br><span style="font-size:0.9em">${p.desc[lang]}</span></div>`);
+                        });
+                    }
+                }, 500);
+                return () => clearInterval(interval);
+            }, [lang]);
+
+            return (
+                <div className="rounded-xl overflow-hidden shadow-lg border-4 border-white h-[450px] relative z-0">
+                    <div ref={mapRef} className="h-full w-full" />
+                </div>
+            );
+        };
+
+        const Figures = ({ lang }) => (
+            <div className="grid md:grid-cols-2 gap-10">
+                {CONTENT.figures.map((fig, idx) => (
+                    <FadeIn key={idx} delay={idx * 200}>
+                        <div className="group relative bg-white p-6 pt-12 rounded-sm shadow-xl transition-transform hover:-translate-y-2 duration-500 border border-gray-200 h-full">
+                            
+                            {/* Decorative Tape Effect */}
+                            <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 w-32 h-8 bg-yellow-100/80 rotate-[-2deg] shadow-sm backdrop-blur-sm z-10 border-l border-r border-white/50"></div>
+
+                            <div className="flex flex-col items-center text-center">
+                                {/* Photo Frame */}
+                                <div className="relative mb-6 w-48 h-48 bg-gray-100 p-2 shadow-inner border border-gray-300 transform rotate-1 group-hover:rotate-0 transition-transform duration-500">
+                                    {fig.image ? (
+                                        <div className="w-full h-full overflow-hidden relative">
+                                            <img 
+                                                src={fig.image} 
+                                                alt={fig.name[lang]} 
+                                                className="w-full h-full object-cover filter sepia-[0.6] contrast-125 hover:sepia-0 transition-all duration-700"
+                                            />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                                        </div>
+                                    ) : (
+                                        <div className="w-full h-full bg-history-ink/10 flex items-center justify-center relative overflow-hidden">
+                                            <LucideIcon name="users" size={64} className="text-history-ink/30" />
+                                            <div className="absolute inset-0 bg-[radial-gradient(circle,transparent_20%,#f3f4f6_100%)]"></div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Content */}
+                                <h4 className="text-2xl font-serif font-bold text-history-ink mb-2 border-b-2 border-history-red/20 pb-2 w-full">
+                                    {fig.name[lang]}
+                                </h4>
+                                <span className={`inline-block px-3 py-1 text-xs font-bold tracking-widest uppercase rounded mb-4 
+                                    ${fig.type === 'official' ? 'bg-history-blue text-white' : 'bg-history-gold text-white'}`}>
+                                    {fig.title[lang]}
+                                </span>
+                                <p className="text-gray-600 leading-relaxed font-serif text-sm px-4 mb-4">
+                                    {fig.desc[lang]}
+                                </p>
+                                
+                                {/* Source Citation */}
+                                {fig.source && (
+                                    <div className="mt-auto pt-4 text-[10px] text-gray-400 font-sans border-t border-gray-100 w-full text-right">
+                                        {fig.source[lang]}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Corner Stamps */}
+                            <div className="absolute bottom-4 right-4 opacity-10 rotate-[-15deg]">
+                                <div className={`border-2 rounded-full w-16 h-16 flex items-center justify-center font-bold text-xs uppercase
+                                    ${fig.type === 'official' ? 'border-history-blue text-history-blue' : 'border-history-red text-history-red'}`}>
+                                    {fig.type === 'official' ? 'RECORD' : 'MEMORY'}
+                                </div>
+                            </div>
+                        </div>
+                    </FadeIn>
+                ))}
+            </div>
+        );
+
+        const Videos = ({ lang }) => (
+            <div className="grid md:grid-cols-2 gap-8">
+                {CONTENT.videos.map((vid, idx) => (
+                    <FadeIn key={idx} delay={idx * 150}>
+                        <a href={`https://www.youtube.com/watch?v=${vid.id}`} target="_blank" rel="noopener noreferrer" className="block group">
+                            <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-history-ink/10 hover:shadow-2xl transition-all duration-300">
+                                <div className="aspect-video relative overflow-hidden bg-black">
+                                    <img 
+                                        src={`https://img.youtube.com/vi/${vid.id}/hqdefault.jpg`} 
+                                        alt={vid.title[lang]}
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100"
+                                    />
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-black/10 transition-colors">
+                                        <div className="w-16 h-16 bg-red-600/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform">
+                                            <LucideIcon name="play" className="text-white fill-white ml-1" size={32} />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="p-4">
+                                    <h4 className="font-bold text-lg text-history-ink mb-2 line-clamp-1 group-hover:text-history-red transition-colors">
+                                        {vid.title[lang]}
+                                    </h4>
+                                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                                        <LucideIcon name="tv-2" size={16} />
+                                        <span>{vid.channel}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </FadeIn>
+                ))}
+            </div>
+        );
+
+        const Resources = ({ lang }) => (
+            <div className="grid gap-6">
+                {CONTENT.resources.map((res, idx) => (
+                    <FadeIn key={idx} delay={idx * 100}>
+                        <a href={res.url} target="_blank" rel="noopener noreferrer" className="block group">
+                            <div className="bg-gradient-to-r from-[#2c3e50] to-[#34495e] p-8 rounded-xl shadow-xl text-white relative overflow-hidden hover:-translate-y-1 transition-transform">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                                
+                                <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                                    <div>
+                                        <div className="flex items-center gap-3 mb-3 text-emerald-400 font-bold tracking-widest text-sm uppercase">
+                                            <LucideIcon name="globe" size={18} />
+                                            {res.type}
+                                        </div>
+                                        <h3 className="text-2xl md:text-3xl font-serif font-bold mb-3 group-hover:text-emerald-200 transition-colors">
+                                            {res.title[lang]}
+                                        </h3>
+                                        <p className="text-gray-300 max-w-2xl font-light">
+                                            {res.desc[lang]}
+                                        </p>
+                                    </div>
+                                    <div className="flex-shrink-0">
+                                        <span className="inline-flex items-center gap-2 px-6 py-3 border border-white/30 rounded-full hover:bg-white hover:text-history-ink transition-all font-bold">
+                                            {lang === 'zh' ? '前往瀏覽' : 'Visit Site'}
+                                            <LucideIcon name="external-link" size={18} />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </FadeIn>
+                ))}
+            </div>
+        );
+
+        const Reflection = ({ lang }) => (
+            <div className="grid md:grid-cols-2 gap-8">
+                {CONTENT.reflection.map((q, idx) => (
+                    <div key={idx} className="stamp-border p-8 bg-history-paper/30">
+                        <div className="flex items-center gap-3 mb-4 text-history-red">
+                            <LucideIcon name="message-square-dashed" size={24} />
+                            <span className="font-bold tracking-wider">THINKING POINT {idx + 1}</span>
+                        </div>
+                        <h4 className="text-xl font-serif font-bold text-history-ink mb-6 leading-relaxed">
+                            {lang === 'zh' ? q.zh : q.en}
+                        </h4>
+                        <textarea 
+                            className="w-full bg-white/80 p-4 rounded border border-history-ink/10 focus:border-history-gold outline-none h-32 resize-none text-gray-700 font-sans transition-colors"
+                            placeholder={lang === 'zh' ? "在此寫下您的反思..." : "Write your reflection here..."}
+                        ></textarea>
+                    </div>
+                ))}
+            </div>
+        );
+
+        // ==========================================
+        // App Layout
+        // ==========================================
+        const App = () => {
+            const [lang, setLang] = React.useState('zh');
+            
+            // Smooth scroll to top on load
+            React.useEffect(() => {
+                window.scrollTo(0, 0);
+            }, []);
+
+            return (
+                <div className="min-h-screen pb-20 selection:bg-history-red selection:text-white">
+                    <div className="texture-overlay"></div>
+
+                    {/* Navbar */}
+                    <nav className="fixed w-full top-0 z-50 bg-history-paper/90 backdrop-blur-sm border-b border-history-ink/10 shadow-sm transition-all duration-300">
+                        <div className="container mx-auto px-6 h-16 flex justify-between items-center">
+                            <div className="flex items-center gap-2 text-history-ink">
+                                <LucideIcon name="feather" className="text-history-red" />
+                                <span className="font-serif font-bold text-lg tracking-tight hidden md:inline">History Curator</span>
+                            </div>
+                            <button 
+                                onClick={() => setLang(l => l === 'zh' ? 'en' : 'zh')}
+                                className="px-5 py-1.5 border border-history-ink/30 rounded-full text-sm font-medium hover:bg-history-ink hover:text-white transition-all"
+                            >
+                                {lang === 'zh' ? 'English' : '中文'}
+                            </button>
+                        </div>
+                    </nav>
+
+                    {/* Hero */}
+                    <header className="pt-32 pb-20 px-4 text-center relative z-10 overflow-hidden">
+                        <div className="container mx-auto max-w-4xl animate-fade-in-up">
+                            <span className="inline-block mb-6 px-3 py-1 bg-history-red/10 text-history-red font-bold tracking-[0.2em] text-sm rounded">
+                                1908
+                            </span>
+                            <h1 className="text-5xl md:text-7xl font-serif font-black text-history-ink mb-6 leading-tight">
+                                {CONTENT.intro.title[lang]}
+                            </h1>
+                            <h2 className="text-xl md:text-3xl font-serif text-history-gold mb-8 italic">
+                                {CONTENT.intro.subtitle[lang]}
+                            </h2>
+                            <p className="text-lg md:text-xl text-gray-700 leading-relaxed font-sans max-w-2xl mx-auto mb-10">
+                                {CONTENT.intro.desc[lang]}
+                            </p>
+
+                            {/* Curator Note for Han Perspective */}
+                            <div className="max-w-3xl mx-auto bg-white/60 p-6 rounded-lg border-l-4 border-history-gold text-left shadow-sm">
+                                <div className="flex gap-3">
+                                    <div className="mt-1 text-history-gold shrink-0">
+                                        <LucideIcon name="quote" size={20} />
+                                    </div>
+                                    <p className="text-gray-800 font-serif italic text-lg">
+                                        {CONTENT.intro.curatorNote[lang]}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-16 flex justify-center opacity-50 animate-bounce">
+                                <LucideIcon name="arrow-down" size={32} />
+                            </div>
+                        </div>
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="container mx-auto px-4 max-w-5xl space-y-32 relative z-10">
+                        
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "歷史時間軸" : "Timeline"} icon="history" />
+                            <Timeline lang={lang} />
+                        </section>
+
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "觀點對照" : "Perspectives"} icon="scale" />
+                            <div className="mb-8 p-4 bg-history-blue/5 rounded text-history-blue text-sm md:text-base text-center font-serif">
+                                {lang === 'zh' 
+                                    ? "💡 試著比較：官方文件如何用「叛亂」來合理化鎮壓，而部落記憶中的「求生」又是多麼微弱？" 
+                                    : "💡 Compare: How official records justify suppression as 'rebellion', versus the tribe's faint cry for 'survival'."}
+                            </div>
+                            <Perspectives lang={lang} />
+                        </section>
+
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "空間記憶" : "Spatial Memory"} icon="map-pin" />
+                            <div className="grid md:grid-cols-3 gap-8 items-center">
+                                <div className="md:col-span-2">
+                                    <MapSection lang={lang} />
+                                </div>
+                                <div className="md:col-span-1 space-y-6">
+                                    <h3 className="text-2xl font-serif font-bold text-history-ink">
+                                        {lang === 'zh' ? "土地會記得" : "The Land Remembers"}
+                                    </h3>
+                                    <p className="text-gray-600 leading-relaxed">
+                                        {lang === 'zh' 
+                                            ? "地圖上的每一個點，現在可能已經是熱鬧的街區或景點，但在百年前，這裡曾是族人誓死捍衛的防線，或是含淚回望的家園。" 
+                                            : "Every point on this map, now perhaps a busy street, was once a defense line defended to the death, or a home looked back upon in tears."}
+                                    </p>
+                                    <div className="p-4 bg-history-gold/10 rounded border border-history-gold/30">
+                                        <span className="text-history-gold font-bold text-sm block mb-1">DATA POINT</span>
+                                        <span className="text-2xl font-black text-history-ink">1,500+</span>
+                                        <span className="text-sm text-gray-600 ml-2">
+                                            {lang === 'zh' ? "被迫遷徙的族人" : "People forced to migrate"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "關鍵人物" : "Key Figures"} icon="users-2" />
+                            <Figures lang={lang} />
+                        </section>
+
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "歷史情境" : "Role Play"} icon="drama" />
+                            <RolePlay lang={lang} />
+                        </section>
+
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "歷史影音" : "Videos"} icon="youtube" />
+                            <Videos lang={lang} />
+                        </section>
+
+                        <section>
+                            <SectionHeader title={lang === 'zh' ? "延伸資源" : "Resources"} icon="library" />
+                            <Resources lang={lang} />
+                        </section>
+
+                        <section className="pb-20">
+                            <SectionHeader title={lang === 'zh' ? "反思與對話" : "Reflection"} icon="pen-tool" />
+                            <Reflection lang={lang} />
+                        </section>
+
+                    </main>
+
+                    {/* Footer */}
+                    <footer className="bg-history-ink text-history-paper py-16 text-center relative z-10">
+                        <div className="container mx-auto px-4">
+                            <div className="flex justify-center mb-6 text-history-red">
+                                <LucideIcon name="feather" size={40} />
+                            </div>
+                            <h2 className="text-2xl font-serif font-bold mb-4">{CONTENT.intro.title[lang]}</h2>
+                            <p className="opacity-60 max-w-lg mx-auto leading-relaxed mb-8">
+                                {lang === 'zh' 
+                                    ? "歷史不該只有一種聲音。透過數位策展，我們希望能為那段失語的過去，找回一點點被聆聽的機會。" 
+                                    : "History shouldn't have just one voice. Through digital curation, we hope to reclaim a chance for the silent past to be heard."}
+                            </p>
+                            <div className="text-xs opacity-30 tracking-widest uppercase">
+                                © 2025 Interactive History Project
+                            </div>
+                        </div>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
