@@ -20,7 +20,7 @@ This project transforms the "Major Historical Events of Indigenous Peoples" book
 | 05 | 大豹社事件 (Topa Incident) | ⏳ 整理中 |
 | 06 | 大嵙崁事件 (Takekan Incident) | ⏳ 整理中 |
 | 07 | 李棟山事件 (Tapung Mountain Incident) | ⏳ 整理中 |
-| 08 | 七腳川事件 (Cikasuan Incident) | ⏳ 整理中 |
+| 08 | **七腳川事件 (Cikasuan Incident) **| ✅ [點此觀看](./08-cikasuan/cikasuan.html) |
 | 09 | 太魯閣事件 (Truku War) | ⏳ 整理中 |
 | 10 | 大分事件 (Dafen Incident) | ⏳ 整理中 |
 
